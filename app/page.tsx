@@ -5,6 +5,7 @@ import {
   decrementLevel,
   incrementLevel,
   removePlayerDB,
+  setGender,
   setPlayersSnapshot,
   updatePlayerName,
 } from "@/services/firebase/db";
@@ -83,8 +84,8 @@ export default function Home() {
     setEditingPlayerName("");
   };
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <main className="w-full max-w-4xl mx-auto">
+    <div className="flex flex-col items-center justify-center mt-15">
+      <main className="w-full max-w-2xl mx-auto">
         <div className="space-y-3 md:space-y-4 mb-8">
           {players.map((player) => (
             <div key={player.id} className="card bg-base-200 shadow-md">
@@ -99,9 +100,14 @@ export default function Home() {
                   </button>
 
                   {/* Munchkin Indicator */}
-                  <div className="badge badge-primary h-8 w-8 md:h-10 md:w-10 rounded-full flex-shrink-0">
-                    <span className="font-bold text-sm md:text-base">M</span>
-                  </div>
+                  <button
+                    className="btn btn-accent btn-sm h-8 w-8 md:h-10 md:w-10 p-0 flex-shrink-0:"
+                    onClick={() =>
+                      setGender(player.id, player.gender === "M" ? "F" : "M")
+                    }
+                  >
+                    {player.gender}
+                  </button>
 
                   {/* Player Name */}
                   <div className="flex-1 min-w-0">
@@ -179,7 +185,7 @@ export default function Home() {
                 placeholder="Player Name"
                 value={newPlayerName}
                 onChange={(e) => setNewPlayerName(e.target.value)}
-                className="input input-bordered flex-1 h-12"
+                className="input input-bordered flex-1 h-12 p-4"
               />
               <button
                 onClick={createPlayer}
