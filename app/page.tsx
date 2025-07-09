@@ -12,6 +12,7 @@ import {
 import { Player } from "@/types/munchkin";
 import { Edit3, Trash2, Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import useSound from "use-sound";
 
 export default function Home() {
@@ -30,7 +31,7 @@ export default function Home() {
     if (!player) return;
 
     if (player.level >= 10) {
-      // console.error("Max Level Reached", "This player is already at max level.");
+      toast.error("Max Level Reached, this player is already at max level.");
       return;
     }
     incrementLevel(id);
@@ -40,7 +41,7 @@ export default function Home() {
     const player = players.find((p) => p.id === id);
     if (!player) return;
     if (player.level <= 1) {
-      // Alert.alert("Min Level Reached", "This player is already at min level.");
+      toast.error("Min Level Reached, this player is already at min level.");
       return;
     }
     decrementLevel(id);
@@ -56,7 +57,7 @@ export default function Home() {
       addPlayer(newPlayer);
       setNewPlayerName("");
     } else {
-      // Alert.alert("Error", "Player name cannot be empty.");
+      toast.error("Error: player name cannot be empty.");
     }
   };
 
@@ -75,7 +76,7 @@ export default function Home() {
       setEditingPlayerId(null);
       setEditingPlayerName("");
     } else {
-      // Alert.alert("Error", "Player name cannot be empty.");
+      toast.error("Error: player name cannot be empty.");
     }
   };
 
@@ -173,6 +174,8 @@ export default function Home() {
             className="btn btn-primary btn-block btn-lg"
             onMouseDown={() => playActive()}
             onMouseUp={() => stop()}
+            onTouchStart={() => playActive()}
+            onTouchEnd={() => stop()}
           >
             Level up notification
           </button>
