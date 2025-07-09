@@ -12,14 +12,14 @@ import {
 import { Player } from "@/types/munchkin";
 import { Edit3, Trash2, Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import useSound from "use-sound";
 
 export default function Home() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [editingPlayerId, setEditingPlayerId] = useState<null | string>(null);
   const [editingPlayerName, setEditingPlayerName] = useState("");
-  // const audioPlayer = useAudioPlayer(alarmSoundEffect);
-  // audioPlayer.volume = 0.3;
+  const [playActive, { stop }] = useSound("/resources/sounds/levelUp.mp3");
 
   useEffect(() => {
     setPlayersSnapshot(setPlayers);
@@ -84,7 +84,7 @@ export default function Home() {
     setEditingPlayerName("");
   };
   return (
-    <div className="flex flex-col items-center justify-center mt-15">
+    <div className="flex flex-col items-center justify-center my-15">
       <main className="w-full max-w-2xl mx-auto">
         <div className="space-y-3 md:space-y-4 mb-8">
           {players.map((player) => (
@@ -168,6 +168,14 @@ export default function Home() {
               </div>
             </div>
           ))}
+
+          <button
+            className="btn btn-primary btn-block btn-lg"
+            onMouseDown={() => playActive()}
+            onMouseUp={() => stop()}
+          >
+            Level up notification
+          </button>
         </div>
 
         {/* Add New Player */}
