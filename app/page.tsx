@@ -110,6 +110,14 @@ export default function Home() {
                         type="text"
                         value={editingPlayerName}
                         onChange={(e) => setEditingPlayerName(e.target.value)}
+                        onBlur={() => saveEditingName(player.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            saveEditingName(player.id);
+                          } else if (e.key === "Escape") {
+                            cancelEditingName();
+                          }
+                        }}
                         className="input input-bordered input-sm md:input-md w-full text-base md:text-lg font-semibold"
                         autoFocus
                       />
