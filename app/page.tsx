@@ -10,7 +10,7 @@ import {
   updatePlayerName,
 } from "@/services/firebase/db";
 import { Player } from "@/types/munchkin";
-import { Edit3, Trash2, Users } from "lucide-react";
+import { Trash2, Users, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSound from "use-sound";
@@ -20,6 +20,7 @@ export default function Home() {
   const [newPlayerName, setNewPlayerName] = useState("");
   const [editingPlayerId, setEditingPlayerId] = useState<null | string>(null);
   const [editingPlayerName, setEditingPlayerName] = useState("");
+  const [playingSound, setPlayingSound] = useState(false);
   const [playActive, { stop }] = useSound("/resources/sounds/levelUp.mp3");
 
   useEffect(() => {
@@ -85,7 +86,7 @@ export default function Home() {
     setEditingPlayerName("");
   };
   return (
-    <div className="flex flex-col items-center justify-center my-15">
+    <div className="flex flex-col items-center justify-center m-5 sm:m-15">
       <main className="w-full max-w-2xl mx-auto">
         <div className="space-y-3 md:space-y-4 mb-8">
           {players.map((player) => (
@@ -136,7 +137,6 @@ export default function Home() {
                         <span className="text-base md:text-lg font-semibold text-base-content truncate">
                           {player.name}
                         </span>
-                        <Edit3 className="h-4 w-4 text-base-content/50 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                       </button>
                     )}
                   </div>
@@ -172,12 +172,30 @@ export default function Home() {
 
           <button
             className="btn btn-primary btn-block btn-lg"
-            onMouseDown={() => playActive()}
-            onMouseUp={() => stop()}
-            onTouchStart={() => playActive()}
-            onTouchEnd={() => stop()}
+            onMouseDown={() => {
+              playActive();
+              setPlayingSound(true);
+            }}
+            onMouseUp={() => {
+              stop();
+              setPlayingSound(false);
+            }}
+            onTouchStart={() => {
+              playActive();
+              setPlayingSound(true);
+            }}
+            onTouchEnd={() => {
+              stop();
+              setPlayingSound(false);
+            }}
           >
-            Level up notification
+            <Volume2
+              className={`${!playingSound && "invisible"} animate-spin`}
+            />
+            <span className="mx-1">Level up notification</span>
+            <Volume2
+              className={`${!playingSound && "invisible"} animate-spin`}
+            />
           </button>
         </div>
 
