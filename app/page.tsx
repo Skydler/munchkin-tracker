@@ -1,103 +1,189 @@
-import Image from "next/image";
+"use client";
+
+import {
+  addPlayer,
+  decrementLevel,
+  incrementLevel,
+  removePlayerDB,
+  setPlayersSnapshot,
+  updatePlayerName,
+} from "@/services/firebase/db";
+import { Player } from "@/types/munchkin";
+import { Edit3, Trash2, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [newPlayerName, setNewPlayerName] = useState("");
+  const [editingPlayerId, setEditingPlayerId] = useState<null | string>(null);
+  const [editingPlayerName, setEditingPlayerName] = useState("");
+  // const audioPlayer = useAudioPlayer(alarmSoundEffect);
+  // audioPlayer.volume = 0.3;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    setPlayersSnapshot(setPlayers);
+  }, []);
+
+  const addLevel = (id: string) => {
+    const player = players.find((p) => p.id === id);
+    if (!player) return;
+
+    if (player.level >= 10) {
+      // console.error("Max Level Reached", "This player is already at max level.");
+      return;
+    }
+    incrementLevel(id);
+  };
+
+  const removeLevel = (id: string) => {
+    const player = players.find((p) => p.id === id);
+    if (!player) return;
+    if (player.level <= 1) {
+      // Alert.alert("Min Level Reached", "This player is already at min level.");
+      return;
+    }
+    decrementLevel(id);
+  };
+
+  const createPlayer = () => {
+    if (newPlayerName.trim()) {
+      const newPlayer = {
+        name: newPlayerName.trim(),
+        gender: "M",
+        level: 1,
+      };
+      addPlayer(newPlayer);
+      setNewPlayerName("");
+    } else {
+      // Alert.alert("Error", "Player name cannot be empty.");
+    }
+  };
+
+  const removePlayer = (id: string) => {
+    removePlayerDB(id);
+  };
+
+  const startEditingName = (player: Player) => {
+    setEditingPlayerId(player.id);
+    setEditingPlayerName(player.name);
+  };
+
+  const saveEditingName = (id: string) => {
+    if (editingPlayerName.trim()) {
+      updatePlayerName(id, editingPlayerName.trim());
+      setEditingPlayerId(null);
+      setEditingPlayerName("");
+    } else {
+      // Alert.alert("Error", "Player name cannot be empty.");
+    }
+  };
+
+  const cancelEditingName = () => {
+    setEditingPlayerId(null);
+    setEditingPlayerName("");
+  };
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <main className="w-full max-w-4xl mx-auto">
+        <div className="space-y-3 md:space-y-4 mb-8">
+          {players.map((player) => (
+            <div key={player.id} className="card bg-base-200 shadow-md">
+              <div className="card-body p-3 md:p-4">
+                <div className="flex items-center gap-3 md:gap-4">
+                  {/* Delete Button */}
+                  <button
+                    onClick={() => removePlayer(player.id)}
+                    className="btn btn-error btn-sm h-8 w-8 md:h-10 md:w-10 p-0 flex-shrink-0"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+
+                  {/* Munchkin Indicator */}
+                  <div className="badge badge-primary h-8 w-8 md:h-10 md:w-10 rounded-full flex-shrink-0">
+                    <span className="font-bold text-sm md:text-base">M</span>
+                  </div>
+
+                  {/* Player Name */}
+                  <div className="flex-1 min-w-0">
+                    {editingPlayerId === player.id ? (
+                      <input
+                        type="text"
+                        value={editingPlayerName}
+                        onChange={(e) => setEditingPlayerName(e.target.value)}
+                        className="input input-bordered input-sm md:input-md w-full text-base md:text-lg font-semibold"
+                        autoFocus
+                      />
+                    ) : (
+                      <button
+                        onClick={() => startEditingName(player)}
+                        className="flex items-center gap-2 text-left w-full group hover:bg-base-300 p-2 rounded transition-colors"
+                      >
+                        <span className="text-base md:text-lg font-semibold text-base-content truncate">
+                          {player.name}
+                        </span>
+                        <Edit3 className="h-4 w-4 text-base-content/50 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Level Controls */}
+                  <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                    <button
+                      onClick={() => removeLevel(player.id)}
+                      disabled={player.level <= 1}
+                      className="btn btn-outline btn-sm h-8 w-8 md:h-10 md:w-10 p-0 text-lg md:text-xl font-bold"
+                    >
+                      −
+                    </button>
+
+                    <div className="min-w-[2rem] md:min-w-[2.5rem] text-center">
+                      <span className="text-lg md:text-xl font-bold text-base-content">
+                        {player.level}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => addLevel(player.id)}
+                      disabled={player.level >= 10}
+                      className="btn btn-neutral btn-sm h-8 w-8 md:h-10 md:w-10 p-0 text-lg md:text-xl font-bold"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Add New Player */}
+        <div className="card bg-base-300 shadow-lg">
+          <div className="card-body p-4 md:p-6">
+            <div className="text-center mb-4">
+              <h2 className="card-title justify-center text-lg md:text-xl">
+                <Users className="h-5 w-5" />
+                Add New Player
+              </h2>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                placeholder="Player Name"
+                value={newPlayerName}
+                onChange={(e) => setNewPlayerName(e.target.value)}
+                className="input input-bordered flex-1 h-12"
+              />
+              <button
+                onClick={createPlayer}
+                disabled={!newPlayerName.trim()}
+                className="btn btn-success h-12 px-6 font-semibold"
+              >
+                Add Player +
+              </button>
+            </div>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
