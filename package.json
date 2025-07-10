@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "npx firebase deploy --only hosting",
+    "publish": "npm run build && npm run deploy"
   },
   "dependencies": {
     "daisyui": "^5.0.46",
