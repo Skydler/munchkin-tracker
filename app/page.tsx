@@ -24,7 +24,10 @@ export default function Home() {
   const [playActive, { stop }] = useSound("/resources/sounds/levelUp.mp3");
 
   useEffect(() => {
-    setPlayersSnapshot(setPlayers);
+    const unsuscribe = setPlayersSnapshot(setPlayers);
+    return () => {
+      unsuscribe();
+    };
   }, []);
 
   const addLevel = (id: string) => {

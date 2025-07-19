@@ -15,9 +15,7 @@ import {
 const db = getFirestore(app);
 const MUNCHKING_PLAYERS_COLLECTION = "munchkin_players";
 
-export async function setPlayersSnapshot(
-  setPlayers: (newPlayers: Player[]) => void,
-) {
+export function setPlayersSnapshot(setPlayers: (newPlayers: Player[]) => void) {
   const q = query(collection(db, MUNCHKING_PLAYERS_COLLECTION));
   const unsubscribe = onSnapshot(q, (snapshot) => {
     const players = snapshot.docs.map((doc) => {
