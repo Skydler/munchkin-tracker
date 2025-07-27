@@ -96,7 +96,9 @@ export default function Home() {
                 <div className="flex items-center gap-3 md:gap-4">
                   {/* Delete Button */}
                   <button
-                    onClick={() => removePlayer(player.id)}
+                    onClick={() => {
+                      confirm("u sure?") ? removePlayer(player.id) : null;
+                    }}
                     className="btn btn-error btn-sm h-8 w-8 md:h-10 md:w-10 p-0 flex-shrink-0"
                   >
                     <Trash2 className="h-4 w-4" />
