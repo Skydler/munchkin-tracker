@@ -10,18 +10,16 @@ import {
   updatePlayerName,
 } from "@/services/firebase/db";
 import { Player } from "@/types/munchkin";
-import { Trash2, Users, Volume2 } from "lucide-react";
+import { Snail, Trash2, Users, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import useSound from "use-sound";
+import SoundEffectButton from "./_components/SoundEffectButton";
 
 export default function Home() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [editingPlayerId, setEditingPlayerId] = useState<null | string>(null);
   const [editingPlayerName, setEditingPlayerName] = useState("");
-  const [playingSound, setPlayingSound] = useState(false);
-  const [playActive, { stop }] = useSound("/resources/sounds/levelUp.mp3");
 
   useEffect(() => {
     const unsuscribe = setPlayersSnapshot(setPlayers);
@@ -173,33 +171,18 @@ export default function Home() {
             </div>
           ))}
 
-          <button
-            className="btn btn-primary btn-block btn-lg"
-            onMouseDown={() => {
-              playActive();
-              setPlayingSound(true);
-            }}
-            onMouseUp={() => {
-              stop();
-              setPlayingSound(false);
-            }}
-            onTouchStart={() => {
-              playActive();
-              setPlayingSound(true);
-            }}
-            onTouchEnd={() => {
-              stop();
-              setPlayingSound(false);
-            }}
-          >
-            <Volume2
-              className={`${!playingSound && "invisible"} animate-spin`}
-            />
-            <span className="mx-1">Level up notification</span>
-            <Volume2
-              className={`${!playingSound && "invisible"} animate-spin`}
-            />
-          </button>
+          <SoundEffectButton
+            soundFile="/resources/sounds/levelUp.mp3"
+            title="Level up notification"
+            Icon={Volume2}
+          />
+
+          <SoundEffectButton
+            soundFile="/resources/sounds/flyesEffect.mp3"
+            title="😴 😴 😴"
+            Icon={Snail}
+            animation="animate-bounce"
+          />
         </div>
 
         {/* Add New Player */}
