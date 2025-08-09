@@ -1,10 +1,11 @@
+import { LucideIcon } from "lucide-react";
 import { useState } from "react";
 import useSound from "use-sound";
 
 type SoundEffectButtonProps = {
   soundFile: string;
   title: string;
-  Icon: React.ComponentType<any>;
+  Icon: LucideIcon;
   animation?: string;
 };
 export default function SoundEffectButton({
