@@ -7,10 +7,10 @@ import {
   collection,
   doc,
   updateDoc,
-  increment,
   addDoc,
   deleteDoc,
   orderBy,
+  runTransaction,
 } from "firebase/firestore";
 
 const db = getFirestore(app);
@@ -43,12 +43,42 @@ export function setPlayersSnapshot(setPlayers: (newPlayers: Player[]) => void) {
 
 export async function incrementLevel(playerId: string) {
   const playerRef = doc(db, MUNCHKING_PLAYERS_COLLECTION, playerId);
-  await updateDoc(playerRef, { level: increment(1) });
+  try {
+    await runTransaction(db, async (transaction) => {
+      const playerDoc = await transaction.get(playerRef);
+      if (!playerDoc.exists()) {
+        throw "Document does not exist!";
+      }
+
+      const newLevel = playerDoc.data().level + 1;
+      if (newLevel > 10) {
+        return;
+      }
+      transaction.update(playerRef, { level: newLevel });
+    });
+  } catch (e) {
+    console.log("Transaction failed: ", e);
+  }
 }
 
 export async function decrementLevel(playerId: string) {
   const playerRef = doc(db, MUNCHKING_PLAYERS_COLLECTION, playerId);
-  await updateDoc(playerRef, { level: increment(-1) });
+  try {
+    await runTransaction(db, async (transaction) => {
+      const playerDoc = await transaction.get(playerRef);
+      if (!playerDoc.exists()) {
+        throw "Document does not exist!";
+      }
+
+      const newLevel = playerDoc.data().level - 1;
+      if (newLevel < 1) {
+        return;
+      }
+      transaction.update(playerRef, { level: newLevel });
+    });
+  } catch (e) {
+    console.log("Transaction failed: ", e);
+  }
 }
 
 export async function addPlayer(player: Omit<Player, "id">) {

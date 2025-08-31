@@ -40,21 +40,12 @@ export default function Home() {
   const addLevel = (id: string) => {
     const player = players.find((p) => p.id === id);
     if (!player) return;
-
-    if (player.level >= 10) {
-      toast.error("Max Level Reached, this player is already at max level.");
-      return;
-    }
     incrementLevel(id);
   };
 
   const removeLevel = (id: string) => {
     const player = players.find((p) => p.id === id);
     if (!player) return;
-    if (player.level <= 1) {
-      toast.error("Min Level Reached, this player is already at min level.");
-      return;
-    }
     decrementLevel(id);
   };
 
