@@ -1,16 +1,11 @@
 "use client";
 
+import { useBattleStore } from "@/stores/BattleStore";
 import { Zap } from "lucide-react";
-import { useState } from "react";
 
 export default function BattleCalculator() {
-  const [monsterHP, setMonsterHP] = useState(10);
-  const [attackerDMG, setAttackerDMG] = useState(0);
-
-  function resetValues() {
-    setMonsterHP(10);
-    setAttackerDMG(0);
-  }
+  const { monsterHP, setMonsterHP, attackerDMG, setAttackerDMG, resetValues } =
+    useBattleStore();
 
   const damageExceedsHP = attackerDMG > monsterHP;
 
