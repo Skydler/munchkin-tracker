@@ -40,6 +40,9 @@ export default function RootLayout({
               <li>
                 <Link href="/calculator">Battle</Link>
               </li>
+              <li>
+                <Link href="/rulebook">Rulebook</Link>
+              </li>
             </ul>
           </div>
         </div>
