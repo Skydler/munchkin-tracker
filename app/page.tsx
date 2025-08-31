@@ -14,19 +14,28 @@ import { Snail, Trash2, Users, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import SoundEffectButton from "./_components/SoundEffectButton";
+import { useVisibilityChange } from "@uidotdev/usehooks";
 
 export default function Home() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [editingPlayerId, setEditingPlayerId] = useState<null | string>(null);
   const [editingPlayerName, setEditingPlayerName] = useState("");
+  const documentVisible = useVisibilityChange();
 
   useEffect(() => {
-    const unsuscribe = setPlayersSnapshot(setPlayers);
+    let unsuscribe = setPlayersSnapshot(setPlayers);
+
+    if (!documentVisible) {
+      toast("App was in background, restarting connection");
+      unsuscribe();
+      unsuscribe = setPlayersSnapshot(setPlayers);
+    }
+
     return () => {
       unsuscribe();
     };
-  }, []);
+  }, [documentVisible]);
 
   const addLevel = (id: string) => {
     const player = players.find((p) => p.id === id);

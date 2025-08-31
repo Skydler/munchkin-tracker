@@ -11,6 +11,7 @@
     "publish": "npm run build && npm run deploy"
   },
   "dependencies": {
+    "@uidotdev/usehooks": "^2.4.1",
     "daisyui": "^5.0.46",
     "firebase": "^11.10.0",
     "lucide-react": "^0.525.0",

@@ -10,22 +10,20 @@ import {
   increment,
   addDoc,
   deleteDoc,
+  orderBy,
 } from "firebase/firestore";
 
 const db = getFirestore(app);
 const MUNCHKING_PLAYERS_COLLECTION = "munchkin_players";
+const FETCH_PLAYERS_COLLECTION_QUERY = query(
+  collection(db, MUNCHKING_PLAYERS_COLLECTION),
+  orderBy("name"),
+);
 
 export function setPlayersSnapshot(setPlayers: (newPlayers: Player[]) => void) {
-  const q = query(collection(db, MUNCHKING_PLAYERS_COLLECTION));
   const unsubscribe = onSnapshot(
-    q,
-    { includeMetadataChanges: true },
+    FETCH_PLAYERS_COLLECTION_QUERY,
     (snapshot) => {
-      console.log(
-        "Data source:",
-        snapshot.metadata.fromCache ? "cache" : "server",
-      );
-      console.log("Has pending writes:", snapshot.metadata.hasPendingWrites);
       const players = snapshot.docs.map((doc) => {
         const data = doc.data() as Omit<Player, "id">;
         return {
@@ -33,8 +31,6 @@ export function setPlayersSnapshot(setPlayers: (newPlayers: Player[]) => void) {
           ...data,
         };
       });
-      // Sort players by name in ascending order
-      players.sort((a, b) => a.name.localeCompare(b.name));
       setPlayers(players);
     },
     (error) => {
