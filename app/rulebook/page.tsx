@@ -143,7 +143,7 @@ export default function Rulebook() {
                   No custom rules yet
                 </h3>
                 <p className="mb-6 opacity-60">
-                  Click "Add Rule" to create your first custom rule
+                  Click &quot;Add Rule&quot; to create your first custom rule
                 </p>
                 <button
                   onClick={() => handleOpenModal()}
