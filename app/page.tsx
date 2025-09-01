@@ -97,7 +97,7 @@ export default function Home() {
                   {/* Delete Button */}
                   <button
                     onClick={() => {
-                      const response = confirm("u sure?");
+                      const response = window.confirm("u sure?");
                       if (response) removePlayer(player.id);
                     }}
                     className="btn btn-error btn-sm h-8 w-8 md:h-10 md:w-10 p-0 flex-shrink-0"

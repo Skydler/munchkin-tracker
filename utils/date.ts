@@ -1,4 +1,8 @@
-export const formatTimeAgo = (date: Date) => {
+export const formatTimeAgo = (timestamp: string) => {
+  const parsedDate = Date.parse(timestamp);
+  if (isNaN(parsedDate)) return "Invalid date";
+
+  const date = new Date(parsedDate);
   const now = new Date();
   const diffInHours = Math.floor(
     (now.getTime() - date.getTime()) / (1000 * 60 * 60),

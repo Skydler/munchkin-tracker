@@ -4,3 +4,11 @@ export type Player = {
   gender: string;
   level: number;
 };
+
+export type Rule = {
+  id: string;
+  cardName: string;
+  ruleDescription: string;
+  createdAt: string;
+  updatedAt: string;
+};

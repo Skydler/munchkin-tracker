@@ -4,57 +4,31 @@ import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 import { formatTimeAgo } from "@/utils/date";
-
-// Type definition for custom rules
-type CustomRule = {
-  id: string;
-  cardName: string;
-  ruleDescription: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
+import { Rule } from "@/types/munchkin";
+import {
+  addRule,
+  deleteRule,
+  getRulesOnce,
+  updateRule,
+} from "@/services/firebase/db";
 
 export default function Rulebook() {
-  const [rules, setRules] = useState<CustomRule[]>([]);
-  const [editingRule, setEditingRule] = useState<CustomRule | null>(null);
+  const [rules, setRules] = useState<Rule[]>([]);
+  const [editingRule, setEditingRule] = useState<Rule | null>(null);
   const [formData, setFormData] = useState({
     cardName: "",
     ruleDescription: "",
   });
 
-  // Mock data for demonstration - replace with Firebase integration
   useEffect(() => {
-    // Simulate loading rules from Firebase
-    const mockRules: CustomRule[] = [
-      {
-        id: "1",
-        cardName: "Curse of the Chicken",
-        ruleDescription:
-          "When played, target player must speak in chicken sounds for 3 turns instead of 1",
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-        updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      },
-      {
-        id: "2",
-        cardName: "Chainsaw of Bloody Dismemberment",
-        ruleDescription:
-          "+3 Bonus becomes +5 if player makes chainsaw sound effects during combat",
-        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-        updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      },
-      {
-        id: "3",
-        cardName: "Ancient Dragon",
-        ruleDescription:
-          "Combat value reduced from 16 to 14 but treasure reward increased by 1 level",
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-        updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-      },
-    ];
-    setRules(mockRules);
+    async function loadRules() {
+      const rules = await getRulesOnce();
+      setRules(rules);
+    }
+    loadRules();
   }, []);
 
-  const handleOpenModal = (rule?: CustomRule) => {
+  const handleOpenModal = (rule?: Rule) => {
     if (rule) {
       setEditingRule(rule);
       setFormData({
@@ -82,16 +56,16 @@ export default function Rulebook() {
     (document.getElementById("rule_modal") as HTMLDialogElement)?.close();
   };
 
-  const handleSaveRule = () => {
+  const handleSaveRule = async () => {
     if (!formData.cardName.trim() || !formData.ruleDescription.trim()) {
       toast.error("Please fill in both card name and rule description");
       return;
     }
 
-    const now = new Date();
+    const now = new Date().toISOString();
 
     if (editingRule) {
-      // Update existing rule
+      // Update existing rule locally and the on the DB
       setRules((prev) =>
         prev.map((rule) =>
           rule.id === editingRule.id
@@ -104,16 +78,27 @@ export default function Rulebook() {
             : rule,
         ),
       );
+      updateRule(editingRule.id, {
+        cardName: formData.cardName.trim(),
+        ruleDescription: formData.ruleDescription.trim(),
+        updatedAt: now,
+      });
       toast.success("Rule updated successfully!");
     } else {
       // Add new rule
-      const newRule: CustomRule = {
-        id: Date.now().toString(), // In real app, Firebase would generate this
+      const payloadRule = {
         cardName: formData.cardName.trim(),
         ruleDescription: formData.ruleDescription.trim(),
         createdAt: now,
         updatedAt: now,
       };
+      const docRef = await addRule(payloadRule);
+
+      const newRule: Rule = {
+        id: docRef.id,
+        ...payloadRule,
+      };
+
       setRules((prev) => [newRule, ...prev]);
       toast.success("Rule added successfully!");
     }
@@ -127,6 +112,7 @@ export default function Rulebook() {
     );
     if (confirmed) {
       setRules((prev) => prev.filter((rule) => rule.id !== ruleId));
+      deleteRule(ruleId);
       toast.success("Rule deleted successfully!");
     }
   };
