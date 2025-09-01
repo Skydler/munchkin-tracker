@@ -14,7 +14,7 @@ import { Snail, Trash2, Users, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import SoundEffectButton from "./_components/SoundEffectButton";
-import { useVisibilityChange } from "@uidotdev/usehooks";
+import { useVisibilityChange } from "@/hooks/useVisibilityChange";
 
 export default function Home() {
   const [players, setPlayers] = useState<Player[]>([]);
