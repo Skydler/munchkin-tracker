@@ -11,7 +11,7 @@
     "publish": "npm run build && npm run deploy"
   },
   "dependencies": {
-    "daisyui": "^5.0.46",
+    "daisyui": "^5.1.8",
     "firebase": "^11.10.0",
     "lucide-react": "^0.525.0",
     "next": "15.3.5",

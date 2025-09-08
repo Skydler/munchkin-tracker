@@ -6,11 +6,12 @@ import {
   incrementLevel,
   removePlayerDB,
   setGender,
+  setLevel,
   setPlayersSnapshot,
   updatePlayerName,
 } from "@/services/firebase/db";
 import { Player } from "@/types/munchkin";
-import { Snail, Trash2, Users, Volume2 } from "lucide-react";
+import { Settings2, Snail, Trash2, Users, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import SoundEffectButton from "./_components/SoundEffectButton";
@@ -85,6 +86,12 @@ export default function Home() {
   const cancelEditingName = () => {
     setEditingPlayerId(null);
     setEditingPlayerName("");
+  };
+
+  const resetScores = () => {
+    players.forEach((player) => {
+      setLevel(player.id, 1);
+    });
   };
   return (
     <div className="flex flex-col items-center justify-center m-5 sm:m-15">
@@ -173,19 +180,6 @@ export default function Home() {
               </div>
             </div>
           ))}
-
-          <SoundEffectButton
-            soundFile="/resources/sounds/levelUp.mp3"
-            title="Level up notification"
-            Icon={Volume2}
-          />
-
-          <SoundEffectButton
-            soundFile="/resources/sounds/flyesEffect.mp3"
-            title="😴 😴 😴"
-            Icon={Snail}
-            animation="animate-bounce"
-          />
         </div>
 
         {/* Add New Player */}
@@ -214,6 +208,39 @@ export default function Home() {
               </button>
             </div>
           </div>
+        </div>
+
+        <div className="fab">
+          <div
+            tabIndex={0}
+            role="button"
+            className="btn btn-lg btn-circle btn-success"
+          >
+            <Settings2 />
+          </div>
+
+          <button
+            className="btn btn-block btn-lg btn-secondary"
+            onClick={() => {
+              const response = window.confirm("u sure?");
+              if (response) resetScores();
+            }}
+          >
+            Reset scores
+          </button>
+
+          <SoundEffectButton
+            soundFile="/resources/sounds/flyesEffect.mp3"
+            title="😴 😴 😴"
+            Icon={Snail}
+            animation="animate-bounce"
+          />
+
+          <SoundEffectButton
+            soundFile="/resources/sounds/levelUp.mp3"
+            title="Level up notification"
+            Icon={Volume2}
+          />
         </div>
       </main>
     </div>

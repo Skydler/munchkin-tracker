@@ -125,3 +125,8 @@ export async function updateRule(ruleId: string, updatedFields: Partial<Rule>) {
 export async function deleteRule(ruleId: string) {
   await deleteDoc(doc(db, MUNCHKIN_RULES_COLLECTION, ruleId));
 }
+
+export async function setLevel(playerId: string, level: number) {
+  const playerRef = doc(db, MUNCHKIN_PLAYERS_COLLECTION, playerId);
+  await updateDoc(playerRef, { level });
+}
