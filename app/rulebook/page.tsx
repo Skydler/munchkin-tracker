@@ -42,7 +42,6 @@ export default function Rulebook() {
         ruleDescription: "",
       });
     }
-    // Open DaisyUI modal
     (document.getElementById("rule_modal") as HTMLDialogElement)?.showModal();
   };
 
@@ -52,7 +51,6 @@ export default function Rulebook() {
       cardName: "",
       ruleDescription: "",
     });
-    // Close DaisyUI modal
     (document.getElementById("rule_modal") as HTMLDialogElement)?.close();
   };
 
@@ -194,7 +192,6 @@ export default function Rulebook() {
           )}
         </div>
 
-        {/* DaisyUI Modal */}
         <dialog id="rule_modal" className="modal">
           <div className="modal-box w-11/12 max-w-2xl">
             <h3 className="font-bold text-lg mb-4">
